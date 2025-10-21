@@ -6,16 +6,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-// Feishu webhook configuration
-const (
-	FeishuWebhookURL = "https://open.feishu.cn/open-apis/bot/v2/hook/eaa5004a-1887-4c55-9473-796ae0870537"
-	TemplateID	  = "AAqxWGzCuibu4"
-	TemplateVersion = "1.0.4"
+var (
+	FeishuWebhookURL string
+	TemplateID	   string
+	TemplateVersion  string
 )
 
 // Alert represents a single alert in the Alertmanager webhook payload
@@ -52,6 +52,14 @@ type FeishuTemplatePayload struct {
 			TemplateVariable map[string]string `json:"template_variable"`
 		} `json:"data"`
 	}	 `json:"card"`
+}
+
+// getEnvOrDefault retrieves the value of the environment variable named by the key.
+func getEnvOrDefault(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }
 
 // getStringOrDefault safely gets a string from map with default value
@@ -158,6 +166,20 @@ func sendToFeishu(payload []byte) error {
 
 // main function
 func main() {
+	// Load Feishu webhook configuration from environment variables
+	FeishuWebhookURL = getEnvOrDefault(
+		"FEISHU_WEBHOOK_URL", 
+		"https://open.feishu.cn/open-apis/bot/v2/hook/eaa5004a-1887-4c55-9473-796ae0870537",
+	)
+	TemplateID = getEnvOrDefault("FEISHU_TEMPLATE_ID", "AAqxWGzCuibu4")
+	TemplateVersion = getEnvOrDefault("FEISHU_TEMPLATE_VERSION", "1.0.5")
+
+	log.Printf("Configuration loaded:")
+	log.Printf("  Webhook URL: %s", FeishuWebhookURL)
+	log.Printf("  Template ID: %s", TemplateID)
+	log.Printf("  Template Version: %s", TemplateVersion)
+
+	// Initialize Gin router
 	r := gin.Default()
 
 	r.POST("/proxy", func(c *gin.Context) {
