@@ -173,6 +173,7 @@ func main() {
 	)
 	TemplateID = getEnvOrDefault("FEISHU_TEMPLATE_ID", "AAqxWGzCuibu4")
 	TemplateVersion = getEnvOrDefault("FEISHU_TEMPLATE_VERSION", "1.0.5")
+	Port := getEnvOrDefault("PORT", "5000")
 
 	log.Printf("Configuration loaded:")
 	log.Printf("  Webhook URL: %s", FeishuWebhookURL)
@@ -230,6 +231,6 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "alerts processed successfully"})
 	})
 
-	log.Println("Starting Alertmanager webhook server on port 5000...")
-	log.Fatal(r.Run(":5000"))
+	log.Printf("Starting Alertmanager webhook server on port %s...", Port)
+	log.Fatal(r.Run(":" + Port))
 }
