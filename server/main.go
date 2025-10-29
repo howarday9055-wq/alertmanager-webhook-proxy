@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -89,6 +90,29 @@ func formatTimeRFC3339ToLocal(t string) string {
 	return parsedTime.In(loc).Format("2006-01-02 15:04:05")
 }
 
+func filterMap(m map[string]string, excludeKeys []string) map[string]string {
+	excludeSet := make(map[string]struct{})
+	for _, key := range excludeKeys {
+		excludeSet[key] = struct{}{}
+	}
+
+	newMap := make(map[string]string)
+	for k, v := range m {
+		if _, found := excludeSet[k]; !found {
+			newMap[k] = v
+		}
+	}
+	return newMap
+}
+
+func mapToString(m map[string]string) string {
+	var pairs []string
+	for k, v := range m {
+		pairs = append(pairs, fmt.Sprintf("%s=%s", k, v))
+	}
+	return strings.Join(pairs, ", ")
+}
+
 // buildFeishuPayloadForSingleAlert constructs the Feishu webhook payload for a single alert
 func buildFeishuPayloadForSingleAlert(alert Alert, alert_count int) ([]byte, error) {
 	var cardStyle string
@@ -100,23 +124,35 @@ func buildFeishuPayloadForSingleAlert(alert Alert, alert_count int) ([]byte, err
 	default:
 		cardStyle = "grey"
 	}
-	// Construct the template variables
-	templateVars := map[string]string{
-		"status":       alert.Status,
-		"card_style":  cardStyle,
-		"alert_count": fmt.Sprintf("%d", alert_count),
-		"job_name":     getStringOrDefault(alert.Labels, "job", "未知"),
-		"alert_name":    getStringOrDefault(alert.Labels, "alertname", "未知告警"),
-		"severity":     getStringOrDefault(alert.Labels, "severity", "warning"),
-		"instance":     getStringOrDefault(alert.Labels, "instance", "未知实例"),
-		"summary":      getStringOrDefault(alert.Annotations, "summary", "无摘要"),
-		"description":  getStringOrDefault(alert.Annotations, "description", "无详细描述"),
-		"start_time":     formatTimeRFC3339ToLocal(alert.StartsAt),
-		"end_time":       formatTimeRFC3339ToLocal(alert.EndsAt),
+
+	// Construct job_name
+	var job_name string
+	value, ok := alert.Labels["job"]
+	if ok && value != "" {
+		job_name = fmt.Sprintf("(%s)", value)
+	} else {
+		job_name = ""
 	}
 
-	// Debug log the template variables
-	log.Printf("Template variables: %+v", templateVars)
+	// Exclude certain keys from labels for label_values
+	excludeKeys := []string{"alertname", "severity", "prometheus"}
+	labelsMap := filterMap(alert.Labels, excludeKeys)
+	label_values := mapToString(labelsMap)
+
+	// Construct the template variables
+	templateVars := map[string]string{
+		"status":       	alert.Status,
+		"card_style":  		cardStyle,
+		"alert_count": 		fmt.Sprintf("%d", alert_count),
+		"job_name":     	job_name,
+		"alert_name":   	getStringOrDefault(alert.Labels, "alertname", "未知告警"),
+		"severity":     	getStringOrDefault(alert.Labels, "severity", "warning"),
+		"label_values":  	label_values,
+		"summary":      	getStringOrDefault(alert.Annotations, "summary", "无摘要"),
+		"description":  	getStringOrDefault(alert.Annotations, "description", "无详细描述"),
+		"start_time":   	formatTimeRFC3339ToLocal(alert.StartsAt),
+		"end_time":     	formatTimeRFC3339ToLocal(alert.EndsAt),
+	}
 
 	payload := FeishuTemplatePayload{
 		MsgType: "interactive",
@@ -203,8 +239,10 @@ func main() {
 		var sendErrs []string
 		for i, alert := range webhook.Alerts {
 			log.Printf("Processing alert %d/%d", i+1, len(webhook.Alerts))
-			log.Printf("Alert details - Status: %s, Labels: %+v, Annotations: %+v", 
-				alert.Status, alert.Labels, alert.Annotations)
+			log.Printf("Alert details: ")
+			log.Printf("  - Status: %s", alert.Status)
+			log.Printf("  - Labels: %+v", alert.Labels)
+			log.Printf("  - Annotations: %+v", alert.Annotations)
 
 			payload, err := buildFeishuPayloadForSingleAlert(alert, len(webhook.Alerts))
 			if err != nil {
@@ -217,9 +255,8 @@ func main() {
 				log.Printf("Error sending to Feishu: %v", err)
 				sendErrs = append(sendErrs, err.Error())
 			} else {
-				log.Printf("Successfully sent alert to Feishu: alertname=%s instance=%s", 
-					getStringOrDefault(alert.Labels, "alertname", "unknown"),
-					getStringOrDefault(alert.Labels, "instance", "unknown"))
+				log.Printf("Successfully sent alert to Feishu: alertname=%s", 
+					getStringOrDefault(alert.Labels, "alertname", "unknown"))
 			}
 		}
 
