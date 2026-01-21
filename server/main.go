@@ -219,6 +219,10 @@ func main() {
 	// Initialize Gin router
 	r := gin.Default()
 
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
+
 	r.POST("/proxy", func(c *gin.Context) {
 		var webhook AlertmanagerWebhook
 		if err := c.ShouldBindJSON(&webhook); err != nil {
