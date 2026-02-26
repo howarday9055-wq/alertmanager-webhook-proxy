@@ -1,0 +1,62 @@
+{
+    "receiver": "feishu",
+    "status": "resolved",
+    "alerts": [
+      {
+        "status": "resolved",
+        "labels": {
+          "account_id": "767398037064",
+          "alertname": "ELBHighActiveFlows",
+          "cluster": "p-saopaulo-eks-01",
+          "container": "prometheus-yet-another-cloudwatch-exporter",
+          "dimension_LoadBalancer": "net/k8s-ingressn-ingressn-6649eda2e0/d3e33354f7ec4488",
+          "endpoint": "http",
+          "instance": "172.16.66.96:5000",
+          "job": "prometheus-yet-another-cloudwatch-exporter",
+          "name": "arn:aws:elasticloadbalancing:mx-central-1:767398037064:loadbalancer/net/k8s-ingressn-ingressn-6649eda2e0/d3e33354f7ec4488",
+          "namespace": "monitoring",
+          "pod": "prometheus-yet-another-cloudwatch-exporter-58846d6c86-pqhxr",
+          "prometheus": "monitoring/kube-prometheus-stack-prometheus",
+          "region": "mx-central-1",
+          "service": "prometheus-yet-another-cloudwatch-exporter",
+          "severity": "warning"
+        },
+        "annotations": {
+          "description": "ELB: net/k8s-ingressn-ingressn-6649eda2e0/d3e33354f7ec4488 Value: 6789",
+          "summary": "ELB connections too high"
+        },
+        "startsAt": "2026-02-25T19:09:31.006Z",
+        "endsAt": "2026-02-25T19:25:01.006Z"
+      }
+    ],
+    "groupLabels": {
+      "alertname": "ELBHighActiveFlows",
+      "namespace": "monitoring",
+      "severity": "warning"
+    },
+    "commonLabels": {
+      "account_id": "767398037064",
+      "alertname": "ELBHighActiveFlows",
+      "cluster": "p-saopaulo-eks-01",
+      "container": "prometheus-yet-another-cloudwatch-exporter",
+      "dimension_LoadBalancer": "net/k8s-ingressn-ingressn-6649eda2e0/d3e33354f7ec4488",
+      "endpoint": "http",
+      "instance": "172.16.66.96:5000",
+      "job": "prometheus-yet-another-cloudwatch-exporter",
+      "name": "arn:aws:elasticloadbalancing:mx-central-1:767398037064:loadbalancer/net/k8s-ingressn-ingressn-6649eda2e0/d3e33354f7ec4488",
+      "namespace": "monitoring",
+      "pod": "prometheus-yet-another-cloudwatch-exporter-58846d6c86-pqhxr",
+      "prometheus": "monitoring/kube-prometheus-stack-prometheus",
+      "region": "mx-central-1",
+      "service": "prometheus-yet-another-cloudwatch-exporter",
+      "severity": "warning"
+    },
+    "commonAnnotations": {
+      "description": "ELB: net/k8s-ingressn-ingressn-6649eda2e0/d3e33354f7ec4488 Value: 6789",
+      "summary": "ELB connections too high"
+    },
+    "externalURL": "https://alert-sp.yq-dev-inner.com",
+    "version": "4",
+    "groupKey": "{}:{alertname=\"ELBHighActiveFlows\", namespace=\"monitoring\", severity=\"warning\"}",
+    "truncatedAlerts": 0
+  }
