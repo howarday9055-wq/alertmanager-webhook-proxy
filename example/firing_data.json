@@ -1,0 +1,56 @@
+{
+    "receiver": "feishu",
+    "status": "firing",
+    "alerts": [
+      {
+        "status": "firing",
+        "labels": {
+          "alertname": "BlackboxSlowProbe",
+          "cluster": "p-mexico-eks-01",
+          "container": "blackbox-exporter",
+          "endpoint": "http",
+          "instance": "https://gitlab.yq-dev-inner.com/users/sign_in",
+          "job": "prometheus-blackbox-exporter",
+          "namespace": "monitoring",
+          "pod": "prometheus-blackbox-exporter-6779cbd45b-26mtq",
+          "prometheus": "monitoring/kube-prometheus-stack-prometheus",
+          "service": "prometheus-blackbox-exporter",
+          "severity": "warning",
+          "target": "gitlab"
+        },
+        "annotations": {
+          "description": "Blackbox probe took more than 1s to complete\n  VALUE = 1.09326029\n  INSTANCE = https://gitlab.yq-dev-inner.com/users/sign_in",
+          "summary": "Blackbox slow probe (instance https://gitlab.yq-dev-inner.com/users/sign_in)"
+        },
+        "startsAt": "2026-03-02T07:07:45.222Z",
+        "endsAt": "0001-01-01T00:00:00Z"
+      }
+    ],
+    "groupLabels": {
+      "alertname": "BlackboxSlowProbe",
+      "namespace": "monitoring",
+      "severity": "warning"
+    },
+    "commonLabels": {
+      "alertname": "BlackboxSlowProbe",
+      "cluster": "p-mexico-eks-01",
+      "container": "blackbox-exporter",
+      "endpoint": "http",
+      "instance": "https://gitlab.yq-dev-inner.com/users/sign_in",
+      "job": "prometheus-blackbox-exporter",
+      "namespace": "monitoring",
+      "pod": "prometheus-blackbox-exporter-6779cbd45b-26mtq",
+      "prometheus": "monitoring/kube-prometheus-stack-prometheus",
+      "service": "prometheus-blackbox-exporter",
+      "severity": "warning",
+      "target": "gitlab"
+    },
+    "commonAnnotations": {
+      "description": "Blackbox probe took more than 1s to complete\n  VALUE = 1.09326029\n  INSTANCE = https://gitlab.yq-dev-inner.com/users/sign_in",
+      "summary": "Blackbox slow probe (instance https://gitlab.yq-dev-inner.com/users/sign_in)"
+    },
+    "externalURL": "https://alert-mx.yq-dev-inner.com",
+    "version": "4",
+    "groupKey": "{}:{alertname=\"BlackboxSlowProbe\", namespace=\"monitoring\", severity=\"warning\"}",
+    "truncatedAlerts": 0
+  }
